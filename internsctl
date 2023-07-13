@@ -1,0 +1,187 @@
+#!/bin/bash
+
+# internsctl - Custom Linux command
+
+# Function to display the manual page
+
+# Function to display command help information
+display_help() {
+  echo "Usage: internsctl [OPTIONS] COMMAND [ARGS]"
+  echo
+  echo "Options:"
+  echo "  --version  Display the version of internsctl."
+  echo "  --help     Display this help message."
+  echo
+  echo "Commands:"
+  echo "  cpu getinfo                      Get CPU information of the server."
+  echo "  memory getinfo                   Get memory information of the server."
+  echo "  user create <username>           Create a new user on the server."
+  echo "  user list                        List all regular users on the server."
+  echo "  user list --sudo-only            List users with sudo permissions on the server."
+  echo "  file getinfo [OPTIONS] <file-name>  Get information about a file."
+  echo
+}
+
+# Function to display command version
+display_version() {
+  echo "internsctl version v0.1.0"
+}
+
+# Function to get CPU information
+get_cpu_info() {
+  lscpu
+}
+
+# Function to get memory information
+get_memory_info() {
+  free
+}
+
+# Function to create a new user
+create_user() {
+  if [ $# -eq 0 ]; then
+    echo "Error: Username not provided."
+    exit 1
+  fi
+
+  username="$1"
+  sudo useradd "$username"
+  echo "User '$username' created successfully."
+}
+
+# Function to list regular users
+list_regular_users() {
+  getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 {print $1}'
+}
+
+# Function to list users with sudo permissions
+list_sudo_users() {
+  getent group sudo | cut -d: -f4 | tr ',' '\n'
+}
+
+# Function to get file information
+get_file_info() {
+  if [ $# -eq 0 ]; then
+    echo "Error: File name not provided."
+    exit 1
+  fi
+
+  filename=""
+  option=""
+
+  # Process command-line options
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --size|-s)
+        option="--size"
+        shift
+        ;;
+      --permissions|-p)
+        option="--permissions"
+        shift
+        ;;
+      --owner|-o)
+        option="--owner"
+        shift
+        ;;
+      --last-modified|-m)
+        option="--last-modified"
+        shift
+        ;;
+      *)
+        filename="$1"
+        shift
+        ;;
+    esac
+  done
+
+  if [ -z "$filename" ]; then
+    echo "Error: File name not provided."
+    exit 1
+  fi
+
+  if [ ! -e "$filename" ]; then
+    echo "Error: File '$filename' does not exist."
+    exit 1
+  fi
+
+  if [ "$option" == "--size" ]; then
+    stat -c %s "$filename"
+  elif [ "$option" == "--permissions" ]; then
+    stat -c %A "$filename"
+  elif [ "$option" == "--owner" ]; then
+    stat -c %U "$filename"
+  elif [ "$option" == "--last-modified" ]; then
+    stat -c %y "$filename"
+  else
+    access=$(stat -c %A "$filename")
+    size=$(stat -c %s "$filename")
+    owner=$(stat -c %U "$filename")
+    modify=$(stat -c %y "$filename")
+    echo "File: $filename"
+    echo "Access: $access"
+    echo "Size(B): $size"
+    echo "Owner: $owner"
+    echo "Modify: $modify"
+  fi
+}
+
+# Main script
+
+# Handle command line arguments
+if [ $# -eq 0 ]; then
+  display_help
+  exit 0
+fi
+
+case "$1" in
+  --help)
+    display_help
+    ;;
+  --version)
+    display_version
+    ;;
+  cpu)
+    if [ "$2" == "getinfo" ]; then
+      get_cpu_info
+    else
+      echo "Error: Invalid command."
+      exit 1
+    fi
+    ;;
+  memory)
+    if [ "$2" == "getinfo" ]; then
+      get_memory_info
+    else
+      echo "Error: Invalid command."
+      exit 1
+    fi
+    ;;
+  user)
+    if [ "$2" == "create" ]; then
+      create_user "$3"
+    elif [ "$2" == "list" ]; then
+      if [ "$3" == "--sudo-only" ]; then
+        list_sudo_users
+      else
+        list_regular_users
+      fi
+    else
+      echo "Error: Invalid command."
+      exit 1
+    fi
+    ;;
+  file)
+    if [ "$2" == "getinfo" ]; then
+      shift 2
+      get_file_info "$@"
+    else
+      echo "Error: Invalid command."
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Error: Invalid command."
+    exit 1
+    ;;
+esac

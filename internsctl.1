@@ -1,0 +1,40 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "INTERNSCTL" "1" "July 2023" ""
+.SH "NAME"
+\fBinternsctl\fR \- Custom Linux command
+.SH "SYNOPSIS"
+\fBinternsctl\fR [OPTIONS] COMMAND [ARGS]
+.SH "DESCRIPTION"
+\fBinternsctl\fR is a custom Linux command created to perform various operations on a Linux system\.
+.SH "OPTIONS"
+.IP "\[ci]" 4
+\fB\-\-version\fR: Display the version of internsctl\.
+.IP "\[ci]" 4
+\fB\-\-help\fR: Display the help message\.
+.IP "" 0
+.SH "COMMANDS"
+.IP "\[ci]" 4
+\fBcpu getinfo\fR: Get CPU information of the server\.
+.IP "\[ci]" 4
+\fBmemory getinfo\fR: Get memory information of the server\.
+.IP "\[ci]" 4
+\fBuser create <username>\fR: Create a new user on the server\.
+.IP "\[ci]" 4
+\fBuser list\fR: List all regular users on the server\.
+.IP "\[ci]" 4
+\fBuser list \-\-sudo\-only\fR: List users with sudo permissions on the server\.
+.IP "\[ci]" 4
+\fBfile getinfo [OPTIONS] <file\-name>\fR: Get information about a file\.
+.IP "" 0
+.SH "OPTIONS"
+.IP "\[ci]" 4
+\fB\-\-size, \-s\fR: Print the size of the specified file\.
+.IP "\[ci]" 4
+\fB\-\-permissions, \-p\fR: Print the file permissions of the specified file\.
+.IP "\[ci]" 4
+\fB\-\-owner, \-o\fR: Print the owner of the specified file\.
+.IP "\[ci]" 4
+\fB\-\-last\-modified, \-m\fR: Print the last modified timestamp of the specified file\.
+.IP "" 0
+
