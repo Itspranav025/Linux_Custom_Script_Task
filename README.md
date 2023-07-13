@@ -116,3 +116,8 @@ man internsctl
 ```
 
 Note: Make sure to save the script as a shell file (e.g., `internsctl.sh`) and make it executable using the `chmod +x internsctl.sh` command before running it.
+
+
+## Workflow Architecture
+![Workflow](https://github.com/Itspranav025/Linux_Custom_Script_Task/assets/88264892/4cdbc87e-87b2-43e5-a7cd-9ddfbc0639a9)
+
